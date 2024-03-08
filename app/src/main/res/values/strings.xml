@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Challenge2</string>
+    <string name="text_name">Hi, Safit !</string>
+    <string name="text_greetings">Mau makan apa hari ini ?</string>
+    <string name="text_tittle_list">List Menu Makanan</string>
+    <string name="text_tittle_categories">Kategori</string>
+</resources>

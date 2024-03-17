@@ -1,4 +1,4 @@
-package com.example.challenge2.utils
+package com.example.challenge2.base
 
 import java.text.NumberFormat
 import java.util.Locale

@@ -1,11 +1,11 @@
-package com.example.challenge2
+package com.example.challenge2.presentation.cataloglist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.challenge2.databinding.ItemCatalogBinding
-import com.example.challenge2.model.Catalog
-import com.example.challenge2.utils.toIndonesianFormat
+import com.example.challenge2.data.model.Catalog
+import com.example.challenge2.base.toIndonesianFormat
 
 class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
 

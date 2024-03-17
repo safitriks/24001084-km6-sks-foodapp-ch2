@@ -1,10 +1,10 @@
-package com.example.challenge2
+package com.example.challenge2.presentation.cataloglist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.challenge2.databinding.ItemCategoryBinding
-import com.example.challenge2.model.Category
+import com.example.challenge2.data.model.Category
 
 class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 

@@ -2,19 +2,33 @@ package com.example.challenge2.presentation.cataloglist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.challenge2.databinding.ItemCategoryBinding
+import com.example.challenge2.base.ViewHolderBinder
 import com.example.challenge2.data.model.Category
+import com.example.challenge2.databinding.ItemCategoryBinding
 
-class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+class CategoryAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val data = mutableListOf<Category>()
+    private var asyncDataDiffer = AsyncListDiffer(
+        this, object : DiffUtil.ItemCallback<Category>() {
+            override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
+                return oldItem.name == newItem.name
+            }
 
-    fun submitData(items: List<Category>) {
-        data.addAll(items)
+            override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+                return oldItem.hashCode() == newItem.hashCode()
+            }
+        }
+    )
+
+    fun submitDataCategory(data: List<Category>) {
+        asyncDataDiffer.submitList(data)
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        return CategoryViewHolder(
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return CategoryItemViewHolder(
             ItemCategoryBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -23,17 +37,10 @@ class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>
         )
     }
 
-    override fun getItemCount(): Int = data.size
+    override fun getItemCount(): Int = asyncDataDiffer.currentList.size
 
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        holder.bind(data[position])
-    }
-
-    class CategoryViewHolder(private val binding: ItemCategoryBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Category) {
-            binding.tvCategoryName.text = item.name
-            binding.ivCategoryImage.setImageResource(item.image)
-        }
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder !is ViewHolderBinder<*>) return
+        (holder as ViewHolderBinder<Category>).bind(asyncDataDiffer.currentList[position])
     }
 }

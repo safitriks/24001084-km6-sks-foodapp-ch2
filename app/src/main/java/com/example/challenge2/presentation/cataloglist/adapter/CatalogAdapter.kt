@@ -2,40 +2,66 @@ package com.example.challenge2.presentation.cataloglist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.challenge2.databinding.ItemCatalogBinding
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.challenge2.base.ViewHolderBinder
 import com.example.challenge2.data.model.Catalog
-import com.example.challenge2.base.toIndonesianFormat
+import com.example.challenge2.databinding.ItemCatalogGridBinding
+import com.example.challenge2.databinding.ItemCatalogListBinding
 
-class CatalogAdapter : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
+class CatalogAdapter(
+    private val listener: OnItemClickedListener<Catalog>,
+    private val listMode: Int = MODE_GRID) : RecyclerView.Adapter<ViewHolder>() {
 
-    private val data = mutableListOf<Catalog>()
-
-    fun submitData(items: List<Catalog>) {
-        data.addAll(items)
+    companion object {
+        const val MODE_LIST = 0
+        const val MODE_GRID = 1
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
-        return CatalogViewHolder(
-            ItemCatalogBinding.inflate(
+
+    private var asyncDataDiffer = AsyncListDiffer(
+        this, object : DiffUtil.ItemCallback<Catalog>() {
+            override fun areItemsTheSame(oldItem: Catalog, newItem: Catalog): Boolean {
+                return oldItem.name == newItem.name
+            }
+
+            override fun areContentsTheSame(oldItem: Catalog, newItem: Catalog): Boolean {
+                return oldItem.hashCode() == newItem.hashCode()
+            }
+        }
+    )
+
+    fun submitData(data: List<Catalog>) {
+        asyncDataDiffer.submitList(data)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return if (listMode == MODE_GRID) CatalogGridItemViewHolder(
+            ItemCatalogGridBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
+            ), listener
+        ) else {
+            CatalogListItemViewHolder(
+                ItemCatalogListBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ), listener
             )
-        )
-    }
-
-    override fun getItemCount(): Int = data.size
-
-    override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {
-        holder.bind(data[position])
-    }
-
-    class CatalogViewHolder(private val binding: ItemCatalogBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Catalog) {
-            binding.tvCatalogName.text = item.name
-            binding.tvCatalogPrice.text = item.price.toIndonesianFormat()
-            binding.ivCatalogImage.setImageResource(item.image)
         }
     }
+
+    override fun getItemCount(): Int = asyncDataDiffer.currentList.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (holder !is ViewHolderBinder<*>) return
+        (holder as ViewHolderBinder<Catalog>).bind(asyncDataDiffer.currentList[position])
+    }
+}
+
+interface OnItemClickedListener<T> {
+    fun onItemClicked(item: T)
 }

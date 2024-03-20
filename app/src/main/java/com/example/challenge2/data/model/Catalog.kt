@@ -10,5 +10,8 @@ data class Catalog (
     @DrawableRes
     var image: Int,
     var price: Double,
+    var details: String,
     var name: String,
+    var location: String,
+    var locationUrl: String
 ) : Parcelable
